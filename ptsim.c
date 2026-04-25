@@ -49,13 +49,19 @@ unsigned char get_page_table(int proc_num)
 void new_process(int proc_num, int page_count)
 {
     // loop through page table and look for free space (0)
-    int count = page_count;
-    for (int i = 0; i < PAGE_COUNT; i++) {
-        int free_page_addr = get_address(0, i);
+
+    int count = page_count+1; // add one for page table
+    int index = 0;
+    while(count > 0) {
+        int free_page_addr = get_address(0, index);
         if (free_page_addr == 0) {
-
-
+            mem[free_page_addr] = 1;
+            // get actual address using proc_num and page_count
+            // allocate page table for process
+            // allocate page_count pages
+            count+=1; 
         }
+        index+=1;
     }
 
 
