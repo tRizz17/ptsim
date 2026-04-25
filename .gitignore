@@ -1,0 +1,4 @@
+ptsim
+*.o
+a2po.c
+po2a.c
