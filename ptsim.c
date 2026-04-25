@@ -48,10 +48,17 @@ unsigned char get_page_table(int proc_num)
 //
 void new_process(int proc_num, int page_count)
 {
-    (void)proc_num;   // remove after implementation
-    (void)page_count; // remove after implementation
+    // loop through page table and look for free space (0)
+    int count = page_count;
+    for (int i = 0; i < PAGE_COUNT; i++) {
+        int free_page_addr = get_address(0, i);
+        if (free_page_addr == 0) {
 
-    // TODO
+
+        }
+    }
+
+
 }
 
 //
@@ -119,7 +126,16 @@ int main(int argc, char *argv[])
             int proc_num = atoi(argv[++i]);
             print_page_table(proc_num);
         }
+        else if (strcmp(argv[i], "np") == 0) {
+            int proc_num = atoi(argv[++i]);
+            int page_count = atoi(argv[i+2]);
+            new_process(proc_num, page_count);
+        }
 
         // TODO: more command line arguments
+        // if strcmp(argv[i], "np")
+        // allocate memory 
+        // first number is page num and second is number of pages
+        // There will be one more for the processes's own page table
     }
 }
