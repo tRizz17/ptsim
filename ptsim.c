@@ -48,25 +48,25 @@ unsigned char get_page_table(int proc_num)
 //
 void new_process(int proc_num, int page_count)
 {
-    int pt_allocated = 0;
-    for (int i = 0; i < PAGE_COUNT && page_count > 0; i++)
+    for (int i = 0; i < page_count; i++)
+    {
+        int page = allocate_page(proc_num);
+        
+
+    }
+}
+
+int allocate_page(int proc_num)
+{
+    for (int i = 0; i < PAGE_COUNT; i++)
     {
         if (mem[i] == 0)
         {
-            if (pt_allocated != 1)
-            {
-                mem[i] = 1;
-                int page_table_addr = get_address(0, PTP_OFFSET + proc_num); // get address for setting pointer in page table map
-                mem[page_table_addr] = get_address(proc_num, 0);
-                pt_allocated = 1;
-            }
-            else
-            {
-                mem[i] = 1;
-                page_count -= 1;
-            }
+            mem[i] = 1;
+            return i;
         }
     }
+    printf("OOM: proc %d: page table\n", proc_num);
 }
 
 //
