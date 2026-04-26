@@ -41,22 +41,7 @@ unsigned char get_page_table(int proc_num)
     return mem[ptp_addr];
 }
 
-//
-// Allocate pages for a new process
-//
-// This includes the new process page table and page_count data pages.
-//
-void new_process(int proc_num, int page_count)
-{
-    for (int i = 0; i < page_count; i++)
-    {
-        int page = allocate_page(proc_num);
-        
-
-    }
-}
-
-int allocate_page(int proc_num)
+int allocate_page(void)
 {
     for (int i = 0; i < PAGE_COUNT; i++)
     {
@@ -66,7 +51,30 @@ int allocate_page(int proc_num)
             return i;
         }
     }
-    printf("OOM: proc %d: page table\n", proc_num);
+    return 0;
+    // need to actually return something here that indicates a failure and stops the execution
+}
+
+//
+// Allocate pages for a new process
+//
+// This includes the new process page table and page_count data pages.
+//
+void new_process(int proc_num, int page_count)
+{
+    int page = allocate_page();
+    if (page == 0)
+    {
+        printf("OOM: proc %d: page table\n", proc_num);
+        return;
+    }
+    mem[PTP_OFFSET + proc_num] = page;
+    for (int i = 0; i < page_count; i++)
+    {
+        int next_page = allocate_page();
+        int pt_address = get_address(page, i);
+        mem[pt_address] = next_page;
+    }
 }
 
 //
