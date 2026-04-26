@@ -72,7 +72,7 @@ void new_process(int proc_num, int page_count)
     for (int i = 0; i < page_count; i++)
     {
         int next_page = allocate_page();
-        if (page == 0xFF)
+        if (next_page == 0xFF)
         {
             printf("OOM: proc %d: data page\n", proc_num);
             return;
