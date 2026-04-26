@@ -51,7 +51,7 @@ int allocate_page(void)
             return i;
         }
     }
-    return 0;
+    return 0xFF;
     // need to actually return something here that indicates a failure and stops the execution
 }
 
@@ -63,7 +63,7 @@ int allocate_page(void)
 void new_process(int proc_num, int page_count)
 {
     int page = allocate_page();
-    if (page == 0)
+    if (page == 0xFF)
     {
         printf("OOM: proc %d: page table\n", proc_num);
         return;
@@ -72,6 +72,11 @@ void new_process(int proc_num, int page_count)
     for (int i = 0; i < page_count; i++)
     {
         int next_page = allocate_page();
+        if (page == 0xFF)
+        {
+            printf("OOM: proc %d: data page\n", proc_num);
+            return;
+        }
         int pt_address = get_address(page, i);
         mem[pt_address] = next_page;
     }
