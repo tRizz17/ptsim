@@ -95,12 +95,17 @@ void kill_process(int proc_num)
     }
 }
 
-void store_value(int proc_num, int vaddr, int val)
+int get_physical_addr(int proc_num, int vaddr)
 {
     int proc_ptable = mem[PTP_OFFSET + proc_num];
     int proc_page = vaddr >> 8;
     int addr = mem[get_address(proc_ptable, proc_page)];
-    addr = (addr << 8) | (vaddr &= 255);
+    return (addr << 8) | (vaddr &= 255);
+}
+
+void store_value(int proc_num, int vaddr, int val)
+{
+    int addr = get_physical_addr(proc_num, vaddr);
     mem[addr] = val;
     printf("Store proc %d: %d => %d, value=%d\n",
            proc_num, vaddr, addr, val);
@@ -108,10 +113,7 @@ void store_value(int proc_num, int vaddr, int val)
 
 void load_value(int proc_num, int vaddr)
 {
-    int proc_ptable = mem[PTP_OFFSET + proc_num];
-    int proc_page = vaddr >> 8;
-    int addr = mem[get_address(proc_ptable, proc_page)];
-    addr = (addr << 8) | (vaddr &= 255);
+    int addr = get_physical_addr(proc_num, vaddr);
     int val = mem[addr];
     printf("Load proc %d: %d => %d, value=%d\n",
            proc_num, vaddr, addr, val);
