@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
-// Starting Project 5 // 
+// Starting Project 5 //
 
 #define MEM_SIZE 16384 // MUST equal PAGE_SIZE * PAGE_COUNT
 #define PAGE_SIZE 256  // MUST equal 2^PAGE_SHIFT
@@ -54,7 +54,6 @@ int allocate_page(void)
         }
     }
     return 0xFF;
-    // need to actually return something here that indicates a failure and stops the execution
 }
 
 //
@@ -81,6 +80,27 @@ void new_process(int proc_num, int page_count)
         }
         int pt_address = get_address(page, i);
         mem[pt_address] = next_page;
+    }
+}
+
+// void deallocate_page(int page)
+// {
+//     for (int i = page; i < page + PAGE_COUNT; i++)
+//     {
+//         mem[i] = 0;
+//     }
+// }
+
+void kill_process(int proc_num)
+{
+    int proc_ptable_addr = PTP_OFFSET + proc_num;
+    int page = mem[proc_ptable_addr];
+    mem[page] = 0;
+    for (int i = 0; i < PAGE_COUNT; i++) {
+        int pt_address = get_address(page, i);
+        if (mem[pt_address] != 0) {
+            mem[mem[pt_address]] = 0;
+        }
     }
 }
 
@@ -162,11 +182,10 @@ int main(int argc, char *argv[])
             int page_count = atoi(argv[++i]);
             new_process(proc_num, page_count);
         }
-
-        // TODO: more command line arguments
-        // if strcmp(argv[i], "np")
-        // allocate memory
-        // first number is page num and second is number of pages
-        // There will be one more for the processes's own page table
+        else if (strcmp(argv[i], "kp") == 0)
+        {
+            int proc_num = atoi(argv[++i]);
+            kill_process(proc_num);
+        }
     }
 }
