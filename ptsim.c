@@ -83,25 +83,37 @@ void new_process(int proc_num, int page_count)
     }
 }
 
-// void deallocate_page(int page)
-// {
-//     for (int i = page; i < page + PAGE_COUNT; i++)
-//     {
-//         mem[i] = 0;
-//     }
-// }
 
 void kill_process(int proc_num)
 {
-    int proc_ptable_addr = PTP_OFFSET + proc_num;
-    int page = mem[proc_ptable_addr];
+    int page = mem[PTP_OFFSET + proc_num];
     mem[page] = 0;
     for (int i = 0; i < PAGE_COUNT; i++) {
         int pt_address = get_address(page, i);
-        if (mem[pt_address] != 0) {
-            mem[mem[pt_address]] = 0;
-        }
+        if (mem[pt_address] != 0) mem[mem[pt_address]] = 0;
     }
+}
+
+void store_value(int proc_num, int v_addr, int value) 
+{
+    int proc_ptable = mem[PTP_OFFSET + proc_num];
+    int proc_page = v_addr >> 8;
+    int pt_address = get_address(proc_ptable, proc_page);
+    int physical_page = mem[pt_address];
+    physical_page = physical_page << 8;
+    v_addr &= 255;
+    physical_page |= v_addr;
+    mem[physical_page] = value;
+    // printf("proc_ptable: %d\n", proc_ptable);
+    // printf("proc_page: %d\n", proc_page);
+    // printf("v_ddr: %d\n", v_addr);
+    // printf("physical_page: %d\n", physical_page);
+}
+
+void load_value(int proc_num, int v_addr) 
+{
+
+    
 }
 
 //
@@ -187,5 +199,19 @@ int main(int argc, char *argv[])
             int proc_num = atoi(argv[++i]);
             kill_process(proc_num);
         }
+        else if (strcmp(argv[i], "sb") == 0)
+        {
+            int proc_num = atoi(argv[++i]);
+            int v_addr = atoi(argv[++i]);
+            int value = atoi(argv[++i]);
+            store_value(proc_num, v_addr, value);
+        }
+        // else if (strcmp(argv[i], "lb") == 0)
+        // {
+        //     int proc_num = atoi(argv[++i]);
+        //     int v_addr = atoi(argv[++i]);
+        //     load_value(proc_num, v_addr);
+        // } 
+        
     }
 }
