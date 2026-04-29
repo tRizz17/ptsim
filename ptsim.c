@@ -85,7 +85,7 @@ void kill_process(int proc_num)
 {
     int page = get_page_table(proc_num);
     mem[page] = 0;
-    for (int i = 0; i < PAGE_SIZE; i++)
+    for (int i = 0; i < PAGE_COUNT; i++)
     {
         int pt_address = get_address(page, i);
         if (mem[pt_address] != 0)
@@ -98,7 +98,7 @@ int get_physical_addr(int proc_num, int vaddr)
     int proc_ptable = get_page_table(proc_num);
     int proc_page = vaddr >> PAGE_SHIFT;
     int addr = mem[get_address(proc_ptable, proc_page)];
-    return (addr << PAGE_SHIFT) | (vaddr & PAGE_SIZE-1);
+    return (addr << PAGE_SHIFT) | (vaddr & (PAGE_SIZE - 1));
 }
 
 void store_value(int proc_num, int vaddr, int val)
